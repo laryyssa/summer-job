@@ -1,5 +1,6 @@
 import pandas as pd
 import plotly.express as px
+import plotly.graph_objects as go
 
 
 eventos = pd.read_csv('dados/SAO_eventosparadas_230104.csv', sep=';', decimal=',')
@@ -20,27 +21,37 @@ print(qtd_avgVel_paradas.head())
 
 #print(qtd_avgVel_paradas.head())
 
-fig = px.scatter_mapbox(qtd_avgVel_paradas,
-                        lon= qtd_avgVel_paradas['stop_lon'],
-                        lat= qtd_avgVel_paradas['stop_lat'],
-                        zoom = 9.5,
-                        color= qtd_avgVel_paradas['avg_speed'],
-                        size= qtd_avgVel_paradas['qtd'], # posso fazer tamanho por número de rotas que passaram por aqui
-                        width= 1200,
-                        height= 900,
-                        title= 'Média de Velocidade dos Pontos de ônibus')
+fig = go.Figure(go.Scattermapbox(
+    mode = "markers+text",
+    lon = plane_df['lon'], lat = plane_df['lat'],
+    marker = {'size': 20, 'symbol': "airport", 'allowoverlap': False,},
+    hoverinfo='none',
+    text = plane_df['Name'],
+    textposition = "bottom right",
+    textfont={'size':20, 'color':'blue'}
+))
 
-""" fig.update_layout(
-    margin=dict(l=20, r=20, t=20, b=20),
-    paper_bgcolor="LightSteelBlue",
-) """
-
-fig.update_layout(mapbox_style='open-street-map')
-#fig.update_layout(margin={'r':0, 't':50, 'l':0, 'b':10})
+fig.add_trace(go.Scattermapbox(
+    mode = "markers",
+    lon = plane_df['lon'], lat = plane_df['lat'],
+    marker = {'size': plane_df['Range']*50, 'sizemode':'area', 'symbol': "circle", 'opacity':0.3, 'allowoverlap': True,},
+    hoverinfo='skip',
+    text = plane_df['Name'],textposition = "bottom right"))
 
 fig.update_layout(
-    autosize=False,
-    width=1000,
-    height=1000,)
+    mapbox = {
+        'accesstoken': token,
+        'style': "streets",
+        'bearing': 0,
+        'pitch': 0,
+        'center':{'lat':51, 'lon':8},
+        'zoom': 4.6
+    },
+    showlegend = False)
 
-fig.show() 
+fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
+
+fig.show()
+
+
+
