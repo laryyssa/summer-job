@@ -12,14 +12,11 @@ qtd_paradas = pd.merge(eventos, paradas, on='stop_id').groupby('stop_id', as_ind
 qtd_paradas = qtd_paradas[['stop_id', 'trip_id']]
 qtd_paradas = qtd_paradas.rename(columns={'trip_id': 'qtd'})
 
-#print(qtd_paradas)
-
 qtd_avgVel_paradas = pd.merge(eventos, paradas, on='stop_id').groupby('stop_id', as_index=False).mean()
     # já está no padrão Inner => só inclui na tabela aqueles que estão nas 2 tabelas
 qtd_avgVel_paradas = pd.merge(qtd_avgVel_paradas, qtd_paradas, on='stop_id')
 print(qtd_avgVel_paradas.head())
 
-#print(qtd_avgVel_paradas.head())
 
 fig = go.Figure(go.Scattermapbox(
     mode = "markers+text",
