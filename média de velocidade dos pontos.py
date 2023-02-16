@@ -1,6 +1,8 @@
 import pandas as pd
 import plotly.express as px
 
+# MEDIA DAS VELOCIDADES DE PARADA DOS ÔNIBUS EM CADA PONTO DE ÔNIBUS
+
 eventos = pd.read_csv('SAO_eventosparadas_230104.csv', sep=';', decimal=',')
 eventos['avg_speed'] = eventos['avg_speed'].astype(float)
 
