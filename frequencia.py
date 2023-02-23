@@ -26,40 +26,52 @@ filter_es_morning = filter_es_morning[['stop_id', 'trip_id']]
 filter_es_morning = filter_es_morning.rename(columns={'trip_id': 'qtd'})
 
 merge = pd.merge(stops,filter_es_morning, on='stop_id')
-print(merge.describe())
+#print(merge.describe())
 
 merge_qtd = merge.loc[(merge['qtd'] >= 10)]
-print(merge.describe())
-""" 
-fig = px.scatter(merge, x='stop_lon', y='stop_lat',
-                 color='qtd')
+#print(merge.describe())
 
-fig.update_layout(
-    margin=dict(l=20, r=20, t=20, b=20),
-    paper_bgcolor="LightSteelBlue",
-)
 
-fig.show() """
+fig = go.Figure()
 
-fig = go.Figure(go.Scattermapbox(
-    mode='markers',
-    lon= merge['stop_lon'],
-    lat= merge['stop_lat'],
-    marker=dict(
-        color= np.where(np.logical_and(merge['qtd'].values < 10, merge['qtd'] <= 10), 'blue', 'yellow')
-    )
-))
-
+fig = px.scatter_mapbox(merge, lat="stop_lat", lon="stop_lon", zoom=3, height=1000)
 fig.update_layout(mapbox_style="open-street-map")
-fig.update_layout(
-    hovermode='closest',
-    margin=dict(l=20, r=20, t=20, b=20),
-    paper_bgcolor="LightSteelBlue",
+fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
+
+def SetColor(df):
+    values = df['qtd'].tolist()
+    color_list = []
+    for i in values:
+        if(i >= 10):
+            color_list.append("red")
+        else:
+            color_list.append("blue")
+    
+    return color_list
+
+def SetSize(df):
+    values = df['qtd'].tolist()
+    color_list = []
+    for i in values:
+        if(i >= 10):
+            color_list.append(10)
+        else:
+            color_list.append(4)
+    
+    return color_list
+
+fig.add_trace(go.Scattermapbox(
+        lat=merge['stop_lat'].tolist(),
+        lon=merge['stop_lon'].tolist(),
+        mode='markers',
+        marker=go.scattermapbox.Marker(
+            size= SetSize(merge),
+            color= SetColor(merge)  #function gets called here and will return a list of colors, (i.e. ['green', 'blue', 'red', 'green'])
+        ),
+    )
 )
-fig.show()
 
 fig.show()
-
 
 
 filter_es_afternoon = events.loc[(events['hour'] >= 17) & (events['hour'] < 20)]
